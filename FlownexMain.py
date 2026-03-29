@@ -1,7 +1,5 @@
-from email import header
 import os
 import threading
-from unittest import result
 import asyncio
 import omni.kit.commands
 import omni.ext
@@ -51,8 +49,8 @@ class FlownexMain:
         
     #UI Construction 
     def _build_Inputs_tab(self, mode: str = "dynamic"):
+        """Build the physics data reading tab"""
         self._load_flownex_outputs() 
-        """Build the physics data reading tab"""   
         with ui.VStack(spacing=2):             
             with ui.ScrollingFrame() as frame:        
                 if( mode == "dynamic"):
@@ -192,7 +190,7 @@ class FlownexMain:
                     if self._FlownexAPI.IsFnxAvailable():                                           
                         ui.Label("Flownex installation detected", style={"color": cl("#33ff33"), "font_size": 20})
                     else:
-                        ui.Label("Flownex installatin not detected", style={"color": cl("#ff3333"), "font_size": 20})
+                        ui.Label("Flownex installation not detected", style={"color": cl("#ff3333"), "font_size": 20})
 
                 with ui.HStack(height=30):
                     ui.Label("Flownex Project File:", width=150, style={"font_size": 20})
@@ -282,6 +280,8 @@ class FlownexMain:
         configList = self._UserSConfig.LoadDynamicInputs()
         configList2 = self._UserSConfig.LoadStaticInputs()
         #merge both lists
+        if configList is None:
+            configList = []
         if configList2 is not None:
             for item in configList2:
                 if item not in configList:
@@ -304,7 +304,7 @@ class FlownexMain:
                 #add other edit types here as needed
             #set the value in Flownex as well
             
-            if inputDef.Unit == None or inputDef.Unit == "":
+            if inputDef.Unit is None or inputDef.Unit == "":
                 self._FlownexAPI.SetPropertyValue(inputDef.ComponentIdentifier, inputDef.PropertyIdentifier, str(inputDef.DefaultValue))    
             else:
                 self._FlownexAPI.SetPropertyValueUnit(inputDef.ComponentIdentifier, inputDef.PropertyIdentifier, float(inputDef.DefaultValue), inputDef.Unit)
@@ -492,7 +492,7 @@ class FlownexMain:
                     self._fetch_flownex_results()
                 self.eventLoop.call_soon_threadsafe(self._solving_completed, self._flownex_solve_success, "")
             except Exception as e:
-                self.eventLoop.call_soon_threadsafe(self._solving_completed, self._flownex_solve_success, str(e))
+                self.eventLoop.call_soon_threadsafe(self._solving_completed, getattr(self, '_flownex_solve_success', False), str(e))
     
                 
 
@@ -510,7 +510,7 @@ class FlownexMain:
         data = self._inputFields.get(slider.identifier)
         if data:
             self._FlownexAPI.LaunchFlownexIfNeeded(self._UserSConfig.Setup.FlownexProject)
-            if data.Unit == None or data.Unit == "":
+            if data.Unit is None or data.Unit == "":
                 self._FlownexAPI.SetPropertyValue(data.ComponentIdentifier, data.PropertyIdentifier, str(value))    
             else:
                 self._FlownexAPI.SetPropertyValueUnit(data.ComponentIdentifier, data.PropertyIdentifier, value, data.Unit)
@@ -535,7 +535,7 @@ class FlownexMain:
 
    
     def _UpdateResultsWindow(self):
-        if not self._options or not self._results_selection_combo:
+        if not getattr(self, '_options', None) or not getattr(self, '_results_selection_combo', None):
             return
             
         label_index_str = self._results_selection_combo.model.get_item_value_model().as_string
@@ -547,7 +547,7 @@ class FlownexMain:
             return
 
         label = self._options[label_index]
-        text_label = f"Results: " + label
+        text_label = f"Results: {label}"
 
         headers = ["Variable", "Value"]
         rows = []          # full component results (selected category)
@@ -660,7 +660,7 @@ class FlownexMain:
 
     def _open_project(self):
         if self._FlownexAPI is not None:
-            self._FlownexAPI.LaunchFlownexIfNeeded(self._UserSConfig.UserSetup.FlownexProject)
+            self._FlownexAPI.LaunchFlownexIfNeeded(self._UserSConfig.Setup.FlownexProject)
 
     def _append_to_results(self, message):
         """Append a message to the results field, with a newline."""

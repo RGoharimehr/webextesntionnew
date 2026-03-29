@@ -25,10 +25,6 @@ except ImportError:
     PILLOW_AVAILABLE = False
 
 
-print(f"[DEBUG] Matplotlib available: {MATPLOTLIB_AVAILABLE}")
-print(f"[DEBUG] Pillow available: {PILLOW_AVAILABLE}")
-
-
 COLOR_MAP_OPTIONS = [
     "viridis", "plasma", "inferno", "magma", "cividis",
     "Blues", "Greens", "Reds",
