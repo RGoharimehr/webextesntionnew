@@ -14,7 +14,6 @@ omni.kit.pipapi.install(
     ignore_import_check=False,
     ignore_cache=False,
     use_online_index=True,
-    suppress_output=False,
     extra_args=[]
 )   
 
