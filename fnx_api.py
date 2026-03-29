@@ -103,6 +103,7 @@ class FNXApi:
                 self.AttachedProject = self.FlownexSE.Project
                 if self.AttachedProject is None:
                     print(f"Failed to load project: {projectPath}")
+                    return None
                 self.SimulationController = IPS.Core.SimulationControlHelper(self.AttachedProject.SimulationControlHelper)
                 self.NetworkBuilder = IPS.Core.NetworkBuilder(self.AttachedProject.Builder)
             return self.AttachedProject

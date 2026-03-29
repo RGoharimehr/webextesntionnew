@@ -304,7 +304,7 @@ class FlownexMain:
                 #add other edit types here as needed
             #set the value in Flownex as well
             
-            if inputDef.Unit == None or inputDef.Unit == "":
+            if inputDef.Unit is None or inputDef.Unit == "":
                 self._FlownexAPI.SetPropertyValue(inputDef.ComponentIdentifier, inputDef.PropertyIdentifier, str(inputDef.DefaultValue))    
             else:
                 self._FlownexAPI.SetPropertyValueUnit(inputDef.ComponentIdentifier, inputDef.PropertyIdentifier, float(inputDef.DefaultValue), inputDef.Unit)
@@ -510,7 +510,7 @@ class FlownexMain:
         data = self._inputFields.get(slider.identifier)
         if data:
             self._FlownexAPI.LaunchFlownexIfNeeded(self._UserSConfig.Setup.FlownexProject)
-            if data.Unit == None or data.Unit == "":
+            if data.Unit is None or data.Unit == "":
                 self._FlownexAPI.SetPropertyValue(data.ComponentIdentifier, data.PropertyIdentifier, str(value))    
             else:
                 self._FlownexAPI.SetPropertyValueUnit(data.ComponentIdentifier, data.PropertyIdentifier, value, data.Unit)
@@ -535,7 +535,7 @@ class FlownexMain:
 
    
     def _UpdateResultsWindow(self):
-        if not self._options or not self._results_selection_combo:
+        if not getattr(self, '_options', None) or not getattr(self, '_results_selection_combo', None):
             return
             
         label_index_str = self._results_selection_combo.model.get_item_value_model().as_string
@@ -547,7 +547,7 @@ class FlownexMain:
             return
 
         label = self._options[label_index]
-        text_label = "Results: " + label
+        text_label = f"Results: {label}"
 
         headers = ["Variable", "Value"]
         rows = []          # full component results (selected category)
