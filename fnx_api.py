@@ -14,7 +14,7 @@ omni.kit.pipapi.install(
     ignore_import_check=False,
     ignore_cache=False,
     use_online_index=True,
-    surpress_output=False,
+    suppress_output=False,
     extra_args=[]
 )   
 
@@ -37,16 +37,16 @@ class FNXApi:
             value = value.replace(' /automation', '')
             #print("Flownex location: " + value)
             value = value.rpartition('FlownexSE.exe')[0]
-            if value is None:
-                print("Could not resolve Flowenx registrartion. Run the 'registercomapi.bat' (found in the correct version's Program Files)")
+            if not value:
+                print("Could not resolve Flownex registration. Run the 'registercomapi.bat' (found in the correct version's Program Files)")
             return value
         else:
-            print("Cond not resolve flownex key in registry")
+            print("Could not resolve Flownex key in registry")
             print("Run the 'registercomapi.bat' (found in the Flownex installation folder in Program Files)")
         return None    
     
     def __init__(self):
-        self.ProjectFile: str
+        self.ProjectFile: str = ""
         self.FlownexInstalltionDetected = False
         self.AttachedProject = None
         self.FlownexSE = None
@@ -143,11 +143,11 @@ class FNXApi:
             valueWithUnit = str(value) + " " + unitTxt if unitTxt != "" else str(value)
             _cachedProperty = self._GetCachedProperty(componentIdentifier, propertyIdentifier)
             if _cachedProperty is None:
-                print(f"Error setting property value: " + componentIdentifier + "." + propertyIdentifier)
+                print(f"Error setting property value: {componentIdentifier}.{propertyIdentifier}")
                 return
             _cachedProperty.SetValueFromString(valueWithUnit)
         except Exception as e:
-            print(f"Error setting property value: {e} :" + componentIdentifier + "." + propertyIdentifier)
+            print(f"Error setting property value: {e} :{componentIdentifier}.{propertyIdentifier}")
 
     def GetPropertyValueUnit(self, componentIdentifier: str, propertyIdentifier: str, IOFile_unitTxt: str) -> Optional[float]:
         if self.AttachedProject is None or self.SimulationController is None or self.NetworkBuilder is None:
@@ -210,11 +210,11 @@ class FNXApi:
         try:           
             _cachedProperty = self._GetCachedProperty(componentIdentifier, propertyIdentifier)
             if _cachedProperty is None:
-                print(f"Error setting property value: " + componentIdentifier + "." + propertyIdentifier)
+                print(f"Error setting property value: {componentIdentifier}.{propertyIdentifier}")
                 return
             _cachedProperty.SetValueFromString(value)           
         except Exception as e:
-            print(f"Error setting property value: {e} :" + componentIdentifier + "." + propertyIdentifier)
+            print(f"Error setting property value: {e} :{componentIdentifier}.{propertyIdentifier}")
 
 
     def GetPropertyValue(self, componentIdentifier: str, propertyIdentifier: str) -> Optional[str]:
@@ -223,8 +223,8 @@ class FNXApi:
         try:
             _cachedProperty = self._GetCachedProperty(componentIdentifier, propertyIdentifier)
             if _cachedProperty is None:
-                print(f"Error setting property value: " + componentIdentifier + "." + propertyIdentifier)
-                return
+                print(f"Error getting property value: {componentIdentifier}.{propertyIdentifier}")
+                return None
             valueStr = _cachedProperty.GetValueAsString()
             if valueStr is not None:
                 value = valueStr.split()[0]                
@@ -276,11 +276,11 @@ class FNXApi:
             from IPS import Core
             Element = IPS.Core.Element(self.AttachedProject.GetElement(componentIdentifier))
             if Element is None:
-                print(f"Error getting property value: unknown component " + componentIdentifier)
+                print(f"Error getting property value: unknown component {componentIdentifier}")
                 return None
             Property = IPS.Core.Property(Element.GetPropertyFromFullDisplayName(propertyIdentifier))
             if Property is None:
-                print(f"Error getting property value: unknown property " + propertyIdentifier + " in component " + componentIdentifier)
+                print(f"Error getting property value: unknown property {propertyIdentifier} in component {componentIdentifier}")
                 return None
             self._property_cache[key] = Property
             return Property
